@@ -10,7 +10,7 @@ function Product(prodName, imgSrc) {
 
 Product.prototype.render = function() {};
 
-// function getFilenames () {
+// function getFilenames () { // IMPROVEMENT IN WORK - adding filename scraping
 //   var inp = document.getElementById('get-files');
 //   var filenames = [];
 //   var productnames = [];
@@ -26,7 +26,7 @@ Product.prototype.render = function() {};
 // }
 
 function createProducts (filenames) { // make loop to read folder contents and create name and path
-  // var productnames = [];
+  // var productnames = [];  // IMPROVEMENT IN WORK - adding filename scraping
   for (var prodNum = 0; prodNum<filenames.length; prodNum++) {
     new Product(filenames[prodNum].split('.')[0],'img/'+filenames[prodNum]);
   }
@@ -38,28 +38,32 @@ var tracker = {
 
   imagesAvailability: [], // holds display availability for choosing next 3 images
   imagesChosenLast: [0,0,0], // holds previous 3 choices
+  imagesCurrent: [0,0,0],
   votesCount: 0,
   lastVote: 0,
 
   renderImages: function() {
-    document.getElementById('imageleft').src=this.products[this.imagesChosenLast[0]].imgSrc;
-    document.getElementById('imagecenter').src=this.products[this.imagesChosenLast[1]].imgSrc;
-    document.getElementById('imageright').src=this.products[this.imagesChosenLast[2]].imgSrc;
+    document.getElementById('imageleft').src=this.products[this.imagesCurrent[0]].imgSrc;
+    document.getElementById('imagecenter').src=this.products[this.imagesCurrent[1]].imgSrc;
+    document.getElementById('imageright').src=this.products[this.imagesCurrent[2]].imgSrc;
   },
 
-  nextImagesRandom: function () { // pass in tracker.imagesAvailability and .imagesChosenLast
+  nextImagesRandom: function () {
     var rollDice = [];
-    for (var i=0; i<3; i++) {
+    for (var i=0; i<3; i++) { // get 3 images that are marked 'true'
       rollDice[i] = Math.floor(Math.random()*this.imagesAvailability.length);
-      while (!this.imagesAvailability[rollDice[i]]) {
+      while (!this.imagesAvailability[rollDice[i]]) { // keep rolling until rolled image is 'true'
         rollDice[i] = Math.floor(Math.random()*this.imagesAvailability.length);
       }
-      this.imagesAvailability[rollDice[i]] = false;
-      this.imagesChosenLast[i] = rollDice[i];
+      this.imagesAvailability[rollDice[i]] = false; // set this selection from 'true' to 'false'
+      // this.imagesChosenLast[i] = rollDice[i]; //
     }
-    for (var j=0; j<3; j++) {
+    console.log('avail',this.imagesAvailability);
+    console.log('rollDice',rollDice);
+    for (var j=0; j<3; j++) { // 'last' is now 2 rounds old, so set its images to 'true'
       this.imagesAvailability[this.imagesChosenLast[j]] = true;
-      this.imagesChosenLast[j] = rollDice[j];
+      this.imagesChosenLast[j] = this.imagesCurrent[j]; // push 'current' round to 'last' for next round
+      this.imagesCurrent[j] = rollDice[j]; // push 'rolls' into 'current' for next round
       rollDice[j] = 0;
     }
   },
@@ -126,7 +130,7 @@ function resultsCall () {
 
 
 function runScript () {
-  // var imagesList = getFilenames();
+  // var imagesList = getFilenames(); // IMPROVEMENT IN WORK - adding filename scraping
   var filenames = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfast.jpg', 'bubblegum.jpg', 'chair.jpg', 'cthulhu.jpg', 'dog-duck.jpg', 'dragon.jpg', 'pen.jpg', 'pet-sweep.jpg', 'scissors.jpg', 'shark.jpg', 'sweep.png', 'tauntaun.jpg', 'unicorn.jpg', 'usb.gif', 'water-can.jpg', 'wine-glass.jpg'];
   createProducts(filenames);
   tracker.resetVoting();
