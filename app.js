@@ -36,7 +36,6 @@ function createProducts () { // make loop to read folder contents and create nam
 
 var tracker = {
   products: [],
-  totalClicks: 0,
   mainEl: document.getElementById('main-content'),
 
   imagesAvailability: [], // holds display availability for choosing next 3 images
@@ -68,11 +67,12 @@ var tracker = {
   },
 
   resetVoting: function () {
+    this.imagesAvailability = [];
     for (var i=0; i<tracker.products.length; i++) {
       this.imagesAvailability[i] = true; // all options are available at first
     }
-    for (var j=0; j<this.imagesChosenLast.length; j++) {
-      this.imagesChosenLast[j] = 0; // will use to prevent duplication in next display
+    for (var j=0; j<tracker.imagesChosenLast.length; j++) {
+      tracker.imagesChosenLast[j] = 0; // will use to prevent duplication in next display
     }
   }
 
@@ -82,17 +82,49 @@ function voted (event) {
   event.preventDefault();
   tracker.products[tracker.imagesChosenLast[tracker.lastVote]].votes++;
   tracker.votesCount++;
+  tracker.nextImagesRandom();
+  tracker.renderImages();
+  console.log('votesCount',tracker.votesCount);
+  if (tracker.votesCount === 25) {
+    resultsCall();
+  }
 }
 
 function renderResults () {
   var ulEl = document.getElementById('resultslist');
   for (var list=0; list<tracker.products.length; list++) {
     var liEl = document.createElement('li');
-    liEl.textContent = tracker.products[list].prodName + ': ' tracker.products[list].votes + ' votes';
+    liEl.textContent = tracker.products[list].prodName + ': ' + tracker.products[list].votes + ' votes';
     ulEl.appendChild(liEl);
   }
+  var buttonDivEl = document.getElementById('resultsbutton');
+  var buttonEl = document.getElementById('newbutton');
+  buttonDivEl.removeChild(buttonEl);
+  buttonEl = document.createElement('button');
+  buttonDivEl.appendChild(buttonEl);
+  buttonEl.textContent = 'Click to reset';
+  buttonEl.addEventListener('click', refreshPage);
 }
 
+function refreshPage (event) {
+  event.preventDefault;
+  window.location.reload(true);
+}
+
+function resultsCall () {
+  var votedLeft = document.getElementById('imageleft');
+  var votedCenter = document.getElementById('imagecenter');
+  var votedRight = document.getElementById('imageright');
+  votedLeft.removeEventListener('click', voted);
+  votedCenter.removeEventListener('click', voted);
+  votedRight.removeEventListener('click', voted);
+  var buttonDivEl = document.getElementById('resultsbutton');
+  var buttonEl = document.createElement('button');
+  buttonEl.id = 'newbutton';
+  buttonDivEl.appendChild(buttonEl);
+  buttonEl.textContent = 'Click for results';
+  buttonEl.addEventListener('click', renderResults);
+}
 
 
 function runScript () {
@@ -103,14 +135,9 @@ function runScript () {
   var votedLeft = document.getElementById('imageleft');
   var votedCenter = document.getElementById('imagecenter');
   var votedRight = document.getElementById('imageright');
-  console.log('votesCount',tracker.votesCount);
   votedLeft.addEventListener('click', voted);
   votedCenter.addEventListener('click', voted);
   votedRight.addEventListener('click', voted);
-  console.log('votesCount',tracker.votesCount);
-  if (tracker.votesCount == 25) {
-    renderResults();
-  }
 }
 
 runScript();
