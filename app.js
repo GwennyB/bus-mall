@@ -69,7 +69,7 @@ function voted (event) {
   makeChart();
   tracker.nextImagesRandom();
   tracker.renderImages();
-  if (tracker.votesCount === 15) {
+  if (tracker.votesCount === 25) {
     endVoting();
   }
 }
@@ -95,21 +95,6 @@ function endVoting () {
   buttonEl.addEventListener('click', refreshPage);
 }
 
-
-// function renderResults () {
-//   makeChart();
-//   var buttonDivEl = document.getElementById('resultsbutton');
-//   var buttonEl = document.getElementById('newbutton');
-//   buttonDivEl.removeChild(buttonEl);
-//   buttonEl = document.createElement('button');
-//   buttonDivEl.appendChild(buttonEl);
-//   buttonEl.textContent = 'Click to reset';
-//   buttonEl.addEventListener('click', refreshPage);
-// }
-
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 function makeChart () {
   var resultsArray = buildResultsArray(); // resultsArray[0] = names; [1] = votes
   var canvasEl = document.getElementById('votestally');
@@ -133,9 +118,6 @@ function makeChart () {
 
 }
 
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 function buildResultsArray () {
   var finalvotes = [];
   var productnames = [];
@@ -145,10 +127,6 @@ function buildResultsArray () {
   }
   return [productnames, finalvotes];
 }
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
 
 function runScript () {
   var filenames = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfast.jpg', 'bubblegum.jpg', 'chair.jpg', 'cthulhu.jpg', 'dog-duck.jpg', 'dragon.jpg', 'pen.jpg', 'pet-sweep.jpg', 'scissors.jpg', 'shark.jpg', 'sweep.png', 'tauntaun.jpg', 'unicorn.jpg', 'usb.gif', 'water-can.jpg', 'wine-glass.jpg'];
@@ -162,7 +140,6 @@ function runScript () {
   votedLeft.addEventListener('click', voted);
   votedCenter.addEventListener('click', voted);
   votedRight.addEventListener('click', voted);
-  // makeChart();
 }
 
 runScript();
