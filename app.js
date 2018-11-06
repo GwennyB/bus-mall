@@ -1,11 +1,11 @@
 'use strict';
 
-function Product(prodName, imgSrc, index) {
+function Product(prodName, imgSrc) {
   this.prodName = prodName;
   this.imgSrc = imgSrc;
   this.votes = 0;
 
-  products.push(this);
+  tracker.products.push(this);
 }
 
 Product.prototype.render = function() {};
@@ -41,25 +41,16 @@ var tracker = {
 
   imagesAvailability: [], // holds display availability for choosing next 3 images
   imagesChosenLast: [0,0,0], // holds previous 3 choices
-  imagesCurrent: [],
-
-  getRandomIndex: function() {},
-
-  getUniqueImages: function() {},
+  votesCount: 0,
+  lastVote: 0,
 
   renderImages: function() {
-    document.getElementById('imageleft').src=products[this.imagesCurrent[0]].imgSrc;
-    document.getElementById('imagecenter').src=products[this.imagesCurrent[1]].imgSrc;
-    document.getElementById('imageright').src=products[this.imagesCurrent[2]].imgSrc;
+    document.getElementById('imageleft').src=this.products[this.imagesChosenLast[0]].imgSrc;
+    document.getElementById('imagecenter').src=this.products[this.imagesChosenLast[1]].imgSrc;
+    document.getElementById('imageright').src=this.products[this.imagesChosenLast[2]].imgSrc;
   },
 
-  addClickTracker: function() {
-    // adds events to images once rendered
-  },
-
-  clickHandler: function(event) {},
-
-  randomIndex: function () { // pass in tracker.imagesAvailability and .imagesChosenLast
+  nextImagesRandom: function () { // pass in tracker.imagesAvailability and .imagesChosenLast
     var rollDice = [];
     for (var i=0; i<3; i++) {
       rollDice[i] = Math.floor(Math.random()*this.imagesAvailability.length);
@@ -67,7 +58,7 @@ var tracker = {
         rollDice[i] = Math.floor(Math.random()*this.imagesAvailability.length);
       }
       this.imagesAvailability[rollDice[i]] = false;
-      this.imagesCurrent[i] = rollDice[i];
+      this.imagesChosenLast[i] = rollDice[i];
     }
     for (var j=0; j<3; j++) {
       this.imagesAvailability[this.imagesChosenLast[j]] = true;
@@ -77,7 +68,7 @@ var tracker = {
   },
 
   resetVoting: function () {
-    for (var i=0; i<products.length; i++) {
+    for (var i=0; i<tracker.products.length; i++) {
       this.imagesAvailability[i] = true; // all options are available at first
     }
     for (var j=0; j<this.imagesChosenLast.length; j++) {
@@ -87,20 +78,39 @@ var tracker = {
 
 };
 
+function voted (event) {
+  event.preventDefault();
+  tracker.products[tracker.imagesChosenLast[tracker.lastVote]].votes++;
+  tracker.votesCount++;
+}
 
-// global here
+function renderResults () {
+  var ulEl = document.getElementById('resultslist');
+  for (var list=0; list<tracker.products.length; list++) {
+    var liEl = document.createElement('li');
+    liEl.textContent = tracker.products[list].prodName + ': ' tracker.products[list].votes + ' votes';
+    ulEl.appendChild(liEl);
+  }
+}
 
-var products = [];
-createProducts();
-tracker.resetVoting();
-tracker.randomIndex();
-tracker.renderImages();
 
 
-// event listeners: voting
-var votedLeft = document.getElementById('imageleft');
-var votedCenter = document.getElementById('imagecenter');
-var votedRight = document.getElementById('imageright');
-votedLeft.addEventListener('click', votedLeft);
-votedCenter.addEventListener('click', votedCenter);
-votedRight.addEventListener('click', votedRight);
+function runScript () {
+  createProducts();
+  tracker.resetVoting();
+  tracker.nextImagesRandom();
+  tracker.renderImages();
+  var votedLeft = document.getElementById('imageleft');
+  var votedCenter = document.getElementById('imagecenter');
+  var votedRight = document.getElementById('imageright');
+  console.log('votesCount',tracker.votesCount);
+  votedLeft.addEventListener('click', voted);
+  votedCenter.addEventListener('click', voted);
+  votedRight.addEventListener('click', voted);
+  console.log('votesCount',tracker.votesCount);
+  if (tracker.votesCount == 25) {
+    renderResults();
+  }
+}
+
+runScript();
