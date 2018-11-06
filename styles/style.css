@@ -13,7 +13,13 @@ header {
   background-color: rgb(53, 47, 121);
 }
 
-header h1 h4 {
+header h1 {
+  text-align: center;
+  color: white;
+  margin: 20px auto 20px auto;
+}
+
+header h4 {
   text-align: center;
   color: white;
   margin: 20px auto 20px auto;
