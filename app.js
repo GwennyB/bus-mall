@@ -10,28 +10,26 @@ function Product(prodName, imgSrc) {
 
 Product.prototype.render = function() {};
 
-function createProducts () { // make loop to read folder contents and create name and path
-  new Product('bag','img/bag.jpg');
-  new Product('banana','img/banana.jpg');
-  new Product('bathroom','img/bathroom.jpg');
-  new Product('boots','img/boots.jpg');
-  new Product('breakfast','img/breakfast.jpg');
-  new Product('bubblegum','img/bubblegum.jpg');
-  new Product('chair','img/chair.jpg');
-  new Product('cthulhu','img/cthulhu.jpg');
-  new Product('dog-duck','img/dog-duck.jpg');
-  new Product('dragon','img/dragon.jpg');
-  new Product('pen','img/pen.jpg');
-  new Product('pet-sweep','img/pet-sweep.jpg');
-  new Product('scissors','img/scissors.jpg');
-  new Product('shark','img/shark.jpg');
-  new Product('sweep','img/sweep.png');
-  new Product('tauntaun','img/tauntaun.jpg');
-  new Product('unicorn','img/unicorn.jpg');
-  new Product('usb','img/usb.gif');
-  new Product('water-can','img/water-can.jpg');
-  new Product('wine-glass','img/wine-glass.jpg');
-  new Product('chair','img/chair.jpg');
+// function getFilenames () {
+//   var inp = document.getElementById('get-files');
+//   var filenames = [];
+//   var productnames = [];
+//   inp.addEventListener('input', scrapenames);
+//   function scrapenames (event) {
+//     event.preventDefault;
+//     for (var i=0; i<inp.files.length; i++) {
+//       filenames.push(inp.files[i].name);
+//       productnames.push(inp.files[i].name.split('.')[0]);
+//     }
+//   }
+//   return [productnames, filenames];
+// }
+
+function createProducts (filenames) { // make loop to read folder contents and create name and path
+  // var productnames = [];
+  for (var prodNum = 0; prodNum<filenames.length; prodNum++) {
+    new Product(filenames[prodNum].split('.')[0],'img/'+filenames[prodNum]);
+  }
 }
 
 var tracker = {
@@ -128,7 +126,9 @@ function resultsCall () {
 
 
 function runScript () {
-  createProducts();
+  // var imagesList = getFilenames();
+  var filenames = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfast.jpg', 'bubblegum.jpg', 'chair.jpg', 'cthulhu.jpg', 'dog-duck.jpg', 'dragon.jpg', 'pen.jpg', 'pet-sweep.jpg', 'scissors.jpg', 'shark.jpg', 'sweep.png', 'tauntaun.jpg', 'unicorn.jpg', 'usb.gif', 'water-can.jpg', 'wine-glass.jpg'];
+  createProducts(filenames);
   tracker.resetVoting();
   tracker.nextImagesRandom();
   tracker.renderImages();
