@@ -11,7 +11,7 @@ function Product(prodName, imgSrc, index) {
 Product.prototype.render = function() {};
 
 function createProducts () { // make loop to read folder contents and create name and path
-  new Product('bag','img/img/bag.jpg');
+  new Product('bag','img/bag.jpg');
   new Product('banana','img/banana.jpg');
   new Product('bathroom','img/bathroom.jpg');
   new Product('boots','img/boots.jpg');
@@ -30,7 +30,7 @@ function createProducts () { // make loop to read folder contents and create nam
   new Product('unicorn','img/unicorn.jpg');
   new Product('usb','img/usb.gif');
   new Product('water-can','img/water-can.jpg');
-  new Product('wine-glass','img/wine-glass.jpb');
+  new Product('wine-glass','img/wine-glass.jpg');
   new Product('chair','img/chair.jpg');
 }
 
@@ -48,16 +48,9 @@ var tracker = {
   getUniqueImages: function() {},
 
   renderImages: function() {
-    var leftImgEl = document.getElementById('imageleft');
-    var centerImgEl = document.getElementById('imagecenter');
-    var rightImgEl = document.getElementById('imageright');
-
-    leftImgEl.src = products[this.imagesCurrent[0]];
-    centerImgEl.src = products[this.imagesCurrent[1]];
-    rightImgEl.src = products[this.imagesCurrent[2]];
-
-    
-
+    document.getElementById('imageleft').src=products[this.imagesCurrent[0]].imgSrc;
+    document.getElementById('imagecenter').src=products[this.imagesCurrent[1]].imgSrc;
+    document.getElementById('imageright').src=products[this.imagesCurrent[2]].imgSrc;
   },
 
   addClickTracker: function() {
@@ -101,6 +94,7 @@ var products = [];
 createProducts();
 tracker.resetVoting();
 tracker.randomIndex();
+tracker.renderImages();
 
 
 // event listeners: voting

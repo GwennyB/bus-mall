@@ -3,7 +3,7 @@
 }
 
 body {
-  width: 100%;
+  width: 960px;
   background-color: lightsteelblue;
 }
 
@@ -23,23 +23,30 @@ main {
   width: 100%;
 }
 
-main section {
-  width: 80%;
-  margin: 20px 10%;
+section article {
+  display: inline-block;
+  background-color: white;
+  width: 300px;
+  height: 300px;
 }
 
-#imageleft, #imagecenter, #imageright {
-  width: 30%;
-}
-
-#imageleft {
+#imageleftcontainer {
   float: left;
 }
 
-#imagecenter {
-  margin-left: 5%;
+#imagerightcontainer {
+  float: right;
 }
 
-#imageright {
-  float: right;
+#imagecentercontainer {
+  margin: 0px 30px;
+}
+
+#imageleft, #imagecenter, #imageright {
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }
