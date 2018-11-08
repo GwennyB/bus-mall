@@ -4,6 +4,9 @@ function Product(prodName, imgSrc) {
   this.prodName = prodName;
   this.imgSrc = imgSrc;
   this.votes = 0;
+  this.chartColor = 'rgba(randNum(0,255), randNum(0,255), randNum(0,255), randNum(0,1))';
+
+  pageState.setColors();
 
   pageState.products.push(this);
 }
@@ -19,6 +22,13 @@ var pageState = {
   votesCount: 0,
   lastVote: 0,
   sessionResults: [],
+  chartColors: [],
+
+  setColors: function () {
+    for (var i=0; i<pageState.products.length; i++) {
+      this.chartColors[i] = 'rgba(' + randNum(0,255) + ',' + randNum(0,255) + ',' + randNum(0,255) +',' + randNum(0,1) + ')'
+    }
+  },
 
   renderImages: function() {
     document.getElementById('imageleft').src=this.products[this.imagesCurrent[0]].imgSrc;
@@ -104,6 +114,7 @@ function buildResultsArray () {
     finalvotes[prodNum] = pageState.products[prodNum].votes;
   }
   storage.updateLS();
+  storage.retrieveLS();
   pageState.sessionResults = [productnames,finalvotes];
 }
 
@@ -145,13 +156,20 @@ function sessionChart () {
         {
           labels: pageState.sessionResults[0],
           datasets:
-          [
-            {
-              data: pageState.sessionResults[1],
-            }
-          ]
+            [
+              {
+                data: pageState.sessionResults[1],
+                backgroundColor: 'rgba(15,80,160,0.5)',
+              }
+            ]
         },
-      options: [],
+      options: {
+        title: {
+          display: true,
+          text: 'Your Vote Summary'
+        }
+
+      },
     }
   );
 }
@@ -175,12 +193,22 @@ function historyChart () {
           [
             {
               data: dataArray,
+              backgroundColor: 'rgba(15,80,160,0.6)',
             }
           ]
         },
-      options: [],
+      options: {
+        title: {
+          display: true,
+          text: 'Everyone\'s Vote Summary'
+        }
+      },
     }
   );
+}
+
+function randNum (low,high) {
+  return Math.floor(Math.random()*(high-low+1) + low);
 }
 
 function runScript () {
