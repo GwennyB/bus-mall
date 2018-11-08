@@ -4,18 +4,15 @@ function Product(prodName, imgSrc) {
   this.prodName = prodName;
   this.imgSrc = imgSrc;
   this.votes = 0;
+  this.chartColor = 'rgba(randNum(0,255), randNum(0,255), randNum(0,255), randNum(0,1))';
 
-  tracker.products.push(this);
+  pageState.setColors();
+
+  pageState.products.push(this);
 }
 
-function createProducts (filenames) { // make loop to read folder contents and create name and path
-  // var productnames = [];  // IMPROVEMENT IN WORK - adding filename scraping
-  for (var prodNum = 0; prodNum<filenames.length; prodNum++) {
-    new Product(filenames[prodNum].split('.')[0],'img/'+filenames[prodNum]);
-  }
-}
-
-var tracker = {
+var pageState = {
+  filenames: ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfast.jpg', 'bubblegum.jpg', 'chair.jpg', 'cthulhu.jpg', 'dog-duck.jpg', 'dragon.jpg', 'pen.jpg', 'pet-sweep.jpg', 'scissors.jpg', 'shark.jpg', 'sweep.png', 'tauntaun.jpg', 'unicorn.jpg', 'usb.gif', 'water-can.jpg', 'wine-glass.jpg'],
   products: [],
   mainEl: document.getElementById('main-content'),
 
@@ -24,6 +21,14 @@ var tracker = {
   imagesCurrent: [0,0,0],
   votesCount: 0,
   lastVote: 0,
+  sessionResults: [],
+  chartColors: [],
+
+  setColors: function () {
+    for (var i=0; i<pageState.products.length; i++) {
+      this.chartColors[i] = 'rgba(' + randNum(0,255) + ',' + randNum(0,255) + ',' + randNum(0,255) +',' + randNum(0,1) + ')'
+    }
+  },
 
   renderImages: function() {
     document.getElementById('imageleft').src=this.products[this.imagesCurrent[0]].imgSrc;
@@ -40,8 +45,6 @@ var tracker = {
       }
       this.imagesAvailability[rollDice[i]] = false; // set this selection from 'true' to 'false'
     }
-    console.log('avail',this.imagesAvailability);
-    console.log('rollDice',rollDice);
     for (var j=0; j<3; j++) { // 'last' is now 2 rounds old, so set its images to 'true'
       this.imagesAvailability[this.imagesChosenLast[j]] = true;
       this.imagesChosenLast[j] = this.imagesCurrent[j]; // push 'current' round to 'last' for next round
@@ -51,12 +54,20 @@ var tracker = {
   },
 
   resetVoting: function () {
-    this.imagesAvailability = [];
-    for (var i=0; i<tracker.products.length; i++) {
+    // this.imagesAvailability = [];
+    for (var i=0; i<this.products.length; i++) {
       this.imagesAvailability[i] = true; // all options are available at first
     }
-    for (var j=0; j<tracker.imagesChosenLast.length; j++) {
-      tracker.imagesChosenLast[j] = 0; // will use to prevent duplication in next display
+    for (var j=0; j<this.imagesChosenLast.length; j++) {
+      this.imagesChosenLast[j] = 0; // will use to prevent duplication in next display
+      this.imagesCurrent[j] = 0;
+    }
+  },
+
+  createProducts: function () {
+    // var productnames = [];  // IMPROVEMENT IN WORK - adding filename scraping
+    for (var i = 0; i<this.filenames.length; i++) {
+      new Product(this.filenames[i].split('.')[0],'img/'+this.filenames[i]);
     }
   }
 
@@ -64,12 +75,11 @@ var tracker = {
 
 function voted (event) {
   event.preventDefault();
-  tracker.products[tracker.imagesChosenLast[tracker.lastVote]].votes++;
-  tracker.votesCount++;
-  makeChart();
-  tracker.nextImagesRandom();
-  tracker.renderImages();
-  if (tracker.votesCount === 25) {
+  pageState.products[pageState.imagesChosenLast[pageState.lastVote]].votes++;
+  pageState.votesCount++;
+  pageState.nextImagesRandom();
+  pageState.renderImages();
+  if (pageState.votesCount >24) {
     endVoting();
   }
 }
@@ -86,60 +96,131 @@ function endVoting () {
   votedLeft.removeEventListener('click', voted);
   votedCenter.removeEventListener('click', voted);
   votedRight.removeEventListener('click', voted);
-
-  var buttonDivEl = document.getElementById('resultsbutton'); // make reset button
-  var buttonEl = document.getElementById('newbutton');
-  buttonEl = document.createElement('button');
+  var buttonDivEl = document.getElementById('resetbutton');
+  var buttonEl = document.createElement('button');
   buttonDivEl.appendChild(buttonEl);
   buttonEl.textContent = 'Click to reset';
+  buildResultsArray(); // resultsArray[0] = names; [1] = votes
+  sessionChart();
+  historyChart();
   buttonEl.addEventListener('click', refreshPage);
-}
-
-function makeChart () {
-  var resultsArray = buildResultsArray(); // resultsArray[0] = names; [1] = votes
-  var canvasEl = document.getElementById('votestally');
-  // build chart
-  new Chart (canvasEl,
-    {
-      type: 'radar',
-      data:
-        {
-          labels: resultsArray[0],
-          datasets:
-          [
-            {
-              data: resultsArray[1],
-            }
-          ]
-        },
-      options: [],
-    }
-  );
-
 }
 
 function buildResultsArray () {
   var finalvotes = [];
   var productnames = [];
-  for (var prodNum = 0; prodNum<tracker.products.length; prodNum++) {
-    productnames[prodNum] = tracker.products[prodNum].prodName;
-    finalvotes[prodNum] = tracker.products[prodNum].votes;
+  for (var prodNum = 0; prodNum<pageState.products.length; prodNum++) {
+    productnames[prodNum] = pageState.products[prodNum].prodName;
+    finalvotes[prodNum] = pageState.products[prodNum].votes;
   }
-  return [productnames, finalvotes];
+  storage.updateLS();
+  storage.retrieveLS();
+  pageState.sessionResults = [productnames,finalvotes];
+}
+
+var storage = {
+  resultsLSDEC: [],
+  resultsLS: [],
+
+  updateLS: function () {
+    this.retrieveLS();
+    var resultsLSDEC = storage.resultsLSDEC;
+    var resultsLS = [];
+    for (var i=0; i<resultsLSDEC.length; i++) {
+      resultsLSDEC[i].votes += pageState.products[i].votes;
+    }
+    resultsLS = JSON.stringify(resultsLSDEC);
+    localStorage.setItem('resultsLS',resultsLS);
+    return resultsLSDEC;
+  },
+
+  retrieveLS: function () {
+    if(localStorage.getItem('resultsLS')) {
+      this.resultsLS = localStorage.getItem('resultsLS')
+      this.resultsLSDEC = JSON.parse(this.resultsLS);
+    } else {
+      for (var i=0; i<pageState.products.length; i++) {
+        this.resultsLSDEC[i] = {'name': pageState.products[i].prodName, 'votes': 0};
+      }
+      console.log('skeleton',this.resultsLSDEC);
+    }
+  }
+};
+
+function sessionChart () {
+  var canvasEl = document.getElementById('votestally');
+  new Chart (canvasEl,
+    {
+      type: 'bar',
+      data:
+        {
+          labels: pageState.sessionResults[0],
+          datasets:
+            [
+              {
+                data: pageState.sessionResults[1],
+                backgroundColor: 'rgba(15,80,160,0.5)',
+              }
+            ]
+        },
+      options: {
+        title: {
+          display: true,
+          text: 'Your Vote Summary'
+        }
+
+      },
+    }
+  );
+}
+
+function historyChart () {
+  var dataArray = [];
+  var labelsArray = [];
+  for (var i=0; i<storage.resultsLSDEC.length; i++) {
+    dataArray[i] = storage.resultsLSDEC[i].votes;
+    labelsArray[i] = storage.resultsLSDEC[i].name;
+  }
+  console.log(dataArray);
+  var canvasEl = document.getElementById('historychart');
+  new Chart (canvasEl,
+    {
+      type: 'bar',
+      data:
+        {
+          labels: labelsArray,
+          datasets:
+          [
+            {
+              data: dataArray,
+              backgroundColor: 'rgba(15,80,160,0.6)',
+            }
+          ]
+        },
+      options: {
+        title: {
+          display: true,
+          text: 'Everyone\'s Vote Summary'
+        }
+      },
+    }
+  );
+}
+
+function randNum (low,high) {
+  return Math.floor(Math.random()*(high-low+1) + low);
 }
 
 function runScript () {
-  var filenames = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfast.jpg', 'bubblegum.jpg', 'chair.jpg', 'cthulhu.jpg', 'dog-duck.jpg', 'dragon.jpg', 'pen.jpg', 'pet-sweep.jpg', 'scissors.jpg', 'shark.jpg', 'sweep.png', 'tauntaun.jpg', 'unicorn.jpg', 'usb.gif', 'water-can.jpg', 'wine-glass.jpg'];
-  createProducts(filenames);
-  tracker.resetVoting();
-  tracker.nextImagesRandom();
-  tracker.renderImages();
-  var votedLeft = document.getElementById('imageleft');
-  var votedCenter = document.getElementById('imagecenter');
-  var votedRight = document.getElementById('imageright');
-  votedLeft.addEventListener('click', voted);
-  votedCenter.addEventListener('click', voted);
-  votedRight.addEventListener('click', voted);
+  pageState.createProducts();
+  pageState.resetVoting();
+  pageState.nextImagesRandom();
+  pageState.renderImages();
+  storage.retrieveLS();
+  historyChart();
+  document.getElementById('imageleft').addEventListener('click', voted);
+  document.getElementById('imagecenter').addEventListener('click', voted);
+  document.getElementById('imageright').addEventListener('click', voted);
 }
 
 runScript();
