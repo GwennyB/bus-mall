@@ -3,7 +3,7 @@
 } */
 
 body {
-  width: 960px;
+  width: 1240px;
   background-color: lightsteelblue;
 }
 
@@ -29,6 +29,15 @@ main {
   width: 100%;
 }
 
+main div {
+  float: left;
+}
+
+#images {
+  float: right;
+  margin: 20px 0px 0px 0px;
+}
+
 section article {
   display: inline-block;
   background-color: white;
@@ -38,14 +47,16 @@ section article {
 
 #imageleftcontainer {
   float: left;
+  margin: 0px 0px 0px 0px;
 }
 
 #imagerightcontainer {
   float: right;
+  margin: 0px 0px 0px 0px;
 }
 
 #imagecentercontainer {
-  margin: 0px 30px;
+  margin: 0px 5px 0px 5px;
 }
 
 #imageleft, #imagecenter, #imageright {
@@ -54,9 +65,21 @@ section article {
   max-height: 100%;
   position: relative;
   top: 50%;
-  transform: translateY(-50%);
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%)
 }
 
-ul {
-  columns: 3;
+
+#resetbutton {
+  display: block;
+  width: 800px;
+  margin: 50px 0px 0px 55px;
+}
+
+#votestally {
+  position: relative;
+  width: 900px;
+  top: -30px;
+  left: 25px;
 }

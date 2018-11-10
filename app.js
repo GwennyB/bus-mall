@@ -185,7 +185,7 @@ function historyChart () {
   var canvasEl = document.getElementById('historychart');
   new Chart (canvasEl,
     {
-      type: 'bar',
+      type: 'horizontalBar',
       data:
         {
           labels: labelsArray,
