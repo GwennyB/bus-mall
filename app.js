@@ -79,7 +79,7 @@ function voted (event) {
   pageState.votesCount++;
   pageState.nextImagesRandom();
   pageState.renderImages();
-  if (pageState.votesCount >24) {
+  if (pageState.votesCount >0) {
     endVoting();
   }
 }
@@ -103,7 +103,9 @@ function endVoting () {
   buildResultsArray(); // resultsArray[0] = names; [1] = votes
   sessionChart();
   historyChart();
+  console.log('add event - before');
   buttonEl.addEventListener('click', refreshPage);
+  console.log('add event - after');
 }
 
 function buildResultsArray () {
