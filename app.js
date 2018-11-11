@@ -90,9 +90,9 @@ function refreshPage (event) {
 }
 
 function endVoting () {
-  var votedLeft = document.getElementById('imageleft');
-  var votedCenter = document.getElementById('imagecenter');
-  var votedRight = document.getElementById('imageright');
+  var votedLeft = document.getElementById('imageleftcontainer');
+  var votedCenter = document.getElementById('imagecentercontainer');
+  var votedRight = document.getElementById('imagerightcontainer');
   votedLeft.removeEventListener('click', voted);
   votedCenter.removeEventListener('click', voted);
   votedRight.removeEventListener('click', voted);
@@ -219,9 +219,9 @@ function runScript () {
   pageState.renderImages();
   storage.retrieveLS();
   historyChart();
-  document.getElementById('imageleft').addEventListener('click', voted);
-  document.getElementById('imagecenter').addEventListener('click', voted);
-  document.getElementById('imageright').addEventListener('click', voted);
+  document.getElementById('imageleftcontainer').addEventListener('click', voted);
+  document.getElementById('imagecentercontainer').addEventListener('click', voted);
+  document.getElementById('imagerightcontainer').addEventListener('click', voted);
 }
 
 runScript();
