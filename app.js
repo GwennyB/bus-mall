@@ -96,10 +96,11 @@ function endVoting () {
   votedLeft.removeEventListener('click', voted);
   votedCenter.removeEventListener('click', voted);
   votedRight.removeEventListener('click', voted);
-  var buttonDivEl = document.getElementById('resetbutton');
+  var buttonDivEl = document.getElementById('buttonhole');
   var buttonEl = document.createElement('button');
   buttonDivEl.appendChild(buttonEl);
   buttonEl.textContent = 'Click to reset';
+  buttonEl.id = 'resetbutton';
   buildResultsArray(); // resultsArray[0] = names; [1] = votes
   sessionChart();
   historyChart();
